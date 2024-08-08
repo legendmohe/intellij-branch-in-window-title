@@ -10,7 +10,7 @@ plugins {
 
 group = "org.jetbrains"
 
-version = "2.0.0"
+version = "2.0.1"
 
 repositories {
   mavenCentral()
@@ -35,7 +35,7 @@ dependencies {
 intellij {
   // IntelliJ IDEA releases: https://www.jetbrains.com/intellij-repository/releases e.g. IC-2019.3
   // and see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html#platformVersions
-  version.set("2021.2.3")
+  version.set("2024.1")
   pluginName.set("branch-window-title")
   downloadSources.set(true)
   updateSinceUntilBuild.set(false)

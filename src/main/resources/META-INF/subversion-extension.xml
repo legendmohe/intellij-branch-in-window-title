@@ -1,5 +1,0 @@
-<idea-plugin>
-    <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="io.wisetime.idea.branch.SubversionListener"/>
-    </extensions>
-</idea-plugin>

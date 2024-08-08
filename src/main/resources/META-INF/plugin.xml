@@ -25,10 +25,8 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends optional="true" config-file="git-extension.xml">Git4Idea</depends>
-    <depends optional="true" config-file="subversion-extension.xml">Subversion</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-
         <titleInfoProvider implementation="io.wisetime.idea.branch.BranchTitleInfoProvider"/>
     </extensions>
 
