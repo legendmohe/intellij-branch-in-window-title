@@ -61,7 +61,7 @@ class GitListener : StartupActivity {
         }
         // update project name directly
         val newProjectName = project.stateStore.directoryStorePath?.let {
-            JpsPathUtil.getDefaultProjectName(it)
+            JpsPathUtil.readProjectName(it)
         } ?: return
         (project as? ProjectEx)?.setProjectName(newProjectName + service.getFormattedName(branchName))
     }

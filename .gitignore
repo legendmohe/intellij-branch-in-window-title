@@ -7,4 +7,5 @@ out
 .gradle
 .idea
 build
+.intellijPlatform
 !gradle-wrapper.jar

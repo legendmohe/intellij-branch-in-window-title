@@ -1,11 +1,10 @@
-import org.jetbrains.intellij.tasks.RunPluginVerifierTask
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.util.EnumSet
 
 plugins {
   java
-  kotlin("jvm") version "1.9.23"
-  id("org.jetbrains.intellij") version "1.17.2"
+  kotlin("jvm") version "2.2.0"
+  id("org.jetbrains.intellij.platform") version "2.9.0"
 }
 
 group = "org.jetbrains"
@@ -14,15 +13,18 @@ version = "2.0.1"
 
 repositories {
   mavenCentral()
+  intellijPlatform {
+    defaultRepositories()
+  }
 }
 
 java {
-  sourceCompatibility = JavaVersion.VERSION_11
-  targetCompatibility = JavaVersion.VERSION_11
+  sourceCompatibility = JavaVersion.VERSION_17
+  targetCompatibility = JavaVersion.VERSION_17
 }
 
 kotlin {
-  compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+  compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
 }
 
 dependencies {
@@ -30,17 +32,43 @@ dependencies {
   testImplementation("org.junit.jupiter:junit-jupiter")
   testImplementation("org.mockito:mockito-core:2.21.0")
   testImplementation("org.assertj:assertj-core:3.24.0")
+
+  intellijPlatform {
+    intellijIdeaUltimate("2025.2")
+    bundledPlugins("Git4Idea")
+    pluginVerifier()
+    zipSigner()
+  }
 }
 
-intellij {
-  // IntelliJ IDEA releases: https://www.jetbrains.com/intellij-repository/releases e.g. IC-2019.3
-  // and see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html#platformVersions
-  version.set("2024.1")
-  pluginName.set("branch-window-title")
-  downloadSources.set(true)
-  updateSinceUntilBuild.set(false)
-  // name defined in e.g. plugins/vcs-git/lib/vcs-git/META-INF/plugin.xml
-  plugins.set(listOf("Git4Idea", "Subversion"))
+intellijPlatform {
+  buildSearchableOptions = false
+  instrumentCode = true
+
+  pluginConfiguration {
+    version = project.version.toString()
+
+    ideaVersion {
+      sinceBuild = "252"
+      untilBuild = provider { null }
+    }
+  }
+
+  signing {
+    certificateChain = providers.environmentVariable("CERTIFICATE_CHAIN")
+    privateKey = providers.environmentVariable("PRIVATE_KEY")
+    password = providers.environmentVariable("PRIVATE_KEY_PASSWORD")
+  }
+
+  publishing {
+    token = providers.environmentVariable("PUBLISH_TOKEN")
+  }
+
+  pluginVerification {
+    ides {
+      recommended()
+    }
+  }
 }
 
 tasks.withType(JavaCompile::class.java) {
@@ -49,25 +77,7 @@ tasks.withType(JavaCompile::class.java) {
 }
 
 tasks {
-  test { useJUnitPlatform() }
-
-  runPluginVerifier {
-    // Test oldest supported, and latest
-    ideVersions.set(listOf("IC-2021.2.3", "IC-2024.1"))
-    failureLevel.set(
-      EnumSet.complementOf(
-        EnumSet.of(
-          // these are the only issues we tolerate
-          RunPluginVerifierTask.FailureLevel.DEPRECATED_API_USAGES,
-          RunPluginVerifierTask.FailureLevel.NOT_DYNAMIC,
-        )
-      )
-    )
-  }
-
-  patchPluginXml {
-    version.set("${project.version}")
-    sinceBuild.set("212")
+  test {
+    useJUnitPlatform()
   }
 }
-
