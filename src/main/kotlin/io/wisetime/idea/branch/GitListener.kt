@@ -59,10 +59,11 @@ class GitListener : StartupActivity {
         TitleInfoProvider.getProviders().filterIsInstance<BranchTitleInfoProvider>().onEach {
             it.updateTitle()
         }
+        service.ensureNameFile(project, branchName)
         // update project name directly
         val newProjectName = project.stateStore.directoryStorePath?.let {
             JpsPathUtil.readProjectName(it)
         } ?: return
-        (project as? ProjectEx)?.setProjectName(newProjectName + service.getFormattedName(branchName))
+        (project as? ProjectEx)?.setProjectName(newProjectName)
     }
 }
